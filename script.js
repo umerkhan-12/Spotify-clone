@@ -14,50 +14,84 @@ function formatTime(seconds) {
 
     return `${formattedMinutes}:${formattedSeconds}`;
 }
+// async function getSongs(folder) {
+
+//     currFolder=folder
+//     let a = await fetch(`/${folder}/`)
+//     let response = await a.text()
+//     console.log(response);
+//     let div = document.createElement("div")
+//     div.innerHTML = response;
+//     let as = div.getElementsByTagName("a")
+//      songs = [];
+//     for (let index = 0; index < as.length; index++) {
+//         const element = as[index];
+//         if (element.href.endsWith(".mp3")) {
+//             songs.push(element.href.split(`/${folder}/`)[1])
+//         }
+//     }
+
+
+//     let songUl = document.querySelector(".songLists").getElementsByTagName("ul")[0]
+//     songUl.innerHTML="";
+//     // print in library
+//     for (const song of songs) {
+//         songUl.innerHTML = songUl.innerHTML + `<li> 
+//         <img class="invert" src="music.svg" alt="">
+//                             <div class="info">
+//                                 <div>${song.replaceAll("%20", " ")}</div>
+//                                 <div>Artist name</div>
+//                             </div>
+//                             <div class="playNow">
+//                                 <span>Play Now</span>
+//                                 <img class="invert" src="play.svg" alt="">
+//                             </div>  </li>`
+//     }
+
+
+//     Array.from(document.querySelector(".songLists").getElementsByTagName("li")).forEach(e => {
+//         e.addEventListener("click", () => {
+
+//             console.log(e.querySelector(".info").firstElementChild.innerHTML)
+//             playMusic(e.querySelector(".info").firstElementChild.innerHTML.trim())
+//         })
+
+//     })
+//     return songs
+// }
 async function getSongs(folder) {
+  currFolder = folder;
 
-    currFolder=folder
-    let a = await fetch(`/${folder}/`)
-    let response = await a.text()
-    console.log(response);
-    let div = document.createElement("div")
-    div.innerHTML = response;
-    let as = div.getElementsByTagName("a")
-     songs = [];
-    for (let index = 0; index < as.length; index++) {
-        const element = as[index];
-        if (element.href.endsWith(".mp3")) {
-            songs.push(element.href.split(`/${folder}/`)[1])
-        }
-    }
+  // 🔹 Fetch info.json for this folder
+  let res = await fetch(`/${folder}/info.json`);
+  let data = await res.json();
+  songs = data.songs;
 
+  let songUl = document.querySelector(".songLists ul");
+  songUl.innerHTML = "";
 
-    let songUl = document.querySelector(".songLists").getElementsByTagName("ul")[0]
-    songUl.innerHTML="";
-    // print in library
-    for (const song of songs) {
-        songUl.innerHTML = songUl.innerHTML + `<li> 
+  for (const song of songs) {
+    songUl.innerHTML += `
+      <li>
         <img class="invert" src="music.svg" alt="">
-                            <div class="info">
-                                <div>${song.replaceAll("%20", " ")}</div>
-                                <div>Artist name</div>
-                            </div>
-                            <div class="playNow">
-                                <span>Play Now</span>
-                                <img class="invert" src="play.svg" alt="">
-                            </div>  </li>`
-    }
+        <div class="info">
+          <div>${song.replaceAll("%20", " ")}</div>
+          <div>Artist name</div>
+        </div>
+        <div class="playNow">
+          <span>Play Now</span>
+          <img class="invert" src="play.svg" alt="">
+        </div>
+      </li>`;
+  }
 
+  Array.from(songUl.getElementsByTagName("li")).forEach(e => {
+    e.addEventListener("click", () => {
+      playMusic(e.querySelector(".info").firstElementChild.innerHTML.trim());
+    });
+  });
 
-    Array.from(document.querySelector(".songLists").getElementsByTagName("li")).forEach(e => {
-        e.addEventListener("click", () => {
-
-            console.log(e.querySelector(".info").firstElementChild.innerHTML)
-            playMusic(e.querySelector(".info").firstElementChild.innerHTML.trim())
-        })
-
-    })
-    return songs
+  return songs;
 }
 
 
